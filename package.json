@@ -24,7 +24,7 @@
     ],
     "messageKeys": [
       "TEMPERATURE",
-      "CONDITIONS",
+      "CONDITIONS"
     ],
     "resources": {
       "media": []
