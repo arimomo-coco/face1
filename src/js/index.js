@@ -1,5 +1,13 @@
-var run_me = function(e) {
-    console.log("Look at me, I'm running!");
-};
+//Listen for when the watchface
+Pebble.addEventListener('ready',
+	function(e){
+		console.log('PebbleKit JS ready!');
+	}
+);
 
-module.exports = run_me;
+//Listen for when an AppMessage is received
+Pebble.addEventListener('appmessage',
+	function(e){
+		console.log('AppMessage received!');
+	}
+);
