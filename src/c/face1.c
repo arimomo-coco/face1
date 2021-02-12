@@ -9,6 +9,10 @@ static void main_window_load(Window* window);
 static void main_window_unload(Window* window);
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed);
 static void update_time();
+static void inbox_received_callback(DictionaryIterator* iterator, void* context);
+static void inbox_dropped_callback(AppMessageResult reason, void* context);
+static void outbox_failed_callback(DictionaryIterator* iterator, AppMessageResult reason, void* context);
+static void	outbox_sent_callback(DictionaryIterator* iterator, void* context);
 
 //declare variables
 static Window* s_main_window;
@@ -39,6 +43,15 @@ static void init(){
 
 	//Register with TickTimerService
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+
+	//Register callbacks
+	app_message_register_inbox_received(inbox_received_callback);
+	app_message_register_inbox_dropped(inbox_dropped_callback);
+	app_message_register_outbox_failed(outbox_failed_callback);
+	app_message_register_outbox_sent(outbox_sent_callback);
+
+	//Open AppMessage
+	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void deinit(){
@@ -98,4 +111,20 @@ static void update_time(){
 
 	//Display this time on the TextLayer
 	text_layer_set_text(s_time_layer, s_buffer);
+}
+
+static void inbox_received_callback(DictionaryIterator* iterator, void* context){
+
+}
+
+static void inbox_dropped_callback(AppMessageResult reason, void* context){
+	APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
+}
+
+static void outbox_failed_callback(DictionaryIterator* iterator, AppMessageResult reason, void* context){
+	APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
+}
+
+static void	outbox_sent_callback(DictionaryIterator* iterator, void* context){
+	APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send success!");
 }
