@@ -13,6 +13,7 @@ static void update_time();
 //declare variables
 static Window* s_main_window;
 static TextLayer* s_time_layer;
+static TextLayer* s_weather_layer;
 
 int main(void){
 	init();
@@ -53,20 +54,33 @@ static void main_window_load(Window* window){
 	//Create the TextLayer with specific bounds
 	s_time_layer = text_layer_create(GRect(0, PBL_IF_ROUND_ELSE(58, 52), bounds.size.w, 50));
 
+	//Create temperature Layer
+	s_weather_layer = text_layer_create(GRect(0, PBL_IF_ROUND_ELSE(125, 120), bounds.size.w, 25));	
+
 	//Improve the layout to be more like a watchface
-	text_layer_set_background_color(s_time_layer, GColorClear);
-	text_layer_set_text_color(s_time_layer, GColorBlack);
+	//s_time_layer
+	text_layer_set_background_color(s_time_layer, GColorDarkGreen);
+	text_layer_set_text_color(s_time_layer, GColorWhite);
 	text_layer_set_text(s_time_layer, "00:00");
 	text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
 	text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
 
+	//s_weather_layer
+	text_layer_set_background_color(s_weather_layer, GColorDarkGreen);
+	text_layer_set_text_color(s_weather_layer, GColorWhite);
+	text_layer_set_text(s_weather_layer, "Loading...");
+	text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+	text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
+
 	//Add it as a child layer to the Window's root layer
 	layer_add_child(window_layer, text_layer_get_layer(s_time_layer));
+	layer_add_child(window_layer, text_layer_get_layer(s_weather_layer));
 }
 
 static void main_window_unload(Window* window){
 	//Destroy TextLayer
 	text_layer_destroy(s_time_layer);
+	text_layer_destroy(s_weather_layer);
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed){
