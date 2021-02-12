@@ -19,6 +19,11 @@ static Window* s_main_window;
 static TextLayer* s_time_layer;
 static TextLayer* s_weather_layer;
 
+//Store incoming information
+static char temperature_buffer[8];
+static char conditions_buffer[32];
+static char weather_layer_buffer[32];
+
 int main(void){
 	init();
 	app_event_loop();
@@ -114,7 +119,31 @@ static void update_time(){
 }
 
 static void inbox_received_callback(DictionaryIterator* iterator, void* context){
+	//Read first item
+	Tuple* t = dict_read_first(iterator);
 
+	//For all items
+	while(t != NULL){
+		//Which key was received?
+		switch(t->key){
+			case KEY_TEMPERATURE:
+				snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
+				break;
+			case KEY_CONDITIONS:
+				snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
+				break;
+			default:
+				APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
+				break;
+		}
+
+		//Assemble full string and display
+		snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
+		text_layer_set_text(s_weather_layer, weather_layer_buffer);
+
+		//Look for next item
+		t = dict_read_next(iterator);
+	}
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void* context){
